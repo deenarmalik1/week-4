@@ -1,0 +1,82 @@
+JavaScript debugging is about finding why code doesn't behave as we expect, and we have layers of tools to do that.
+
+1. Console-based debugging - our quick first step:
+
+`console.log` is what we use most, but there's more powerful console APIs we should know.
+
+`console.table` for arrays and objects, much more readable than log. `console.dir` shows detailed object properties. `console.group` and `groupEnd` to nest logs.
+
+`console.time` and `timeEnd` to measure performance of block. `console.trace` to print current stack trace without throwing. `console.assert` only logs if condition false, reduces noise.
+
+`console.warn` and `console.error` give different levels and stack traces, plus filtering in DevTools.
+
+Limitation: Too many logs create noise, we forget to remove, and we don't get ability to pause execution or inspect closure.
+
+2. Debugger statement and breakpoints - our real debugging:
+
+Instead of logs, we can pause execution.
+
+`debugger;` keyword - when DevTools is open, JS engine pauses exactly at that line, like breakpoint in code.
+
+Breakpoints in Chrome DevTools / Firefox DevTools: We open Sources panel, find file, click line number. Execution pauses there. We have types:
+
+- Regular breakpoint: always pause.
+- Conditional breakpoint: right-click breakpoint, set condition expression, pauses only when condition true - critical for loops where we want pause only on specific iteration.
+- Logpoint: similar but instead of pausing, it logs expression without changing code - we get logging without modifying file.
+- XHR breakpoint: pause when specific URL requested.
+- Event listener breakpoint: pause on click, keypress, etc.
+- Exception breakpoint: pause when exception thrown, with option for caught or uncaught only.
+
+When paused, we have full control: Scope panel shows local, closure, global variables. Call Stack shows how we got there. We can hover over variables in code to see values. Watch panel lets us add custom expressions to track.
+
+Stepping: Step over runs next line without entering function, Step into goes inside function call, Step out runs till current function returns, Resume continues till next breakpoint.
+
+3. Network and performance debugging:
+
+Many JS bugs are actually API or performance issues.
+
+Network tab: We see all fetches, their status, payload, headers, timing. We can check if we sent wrong body or server returned error. We can block requests, modify.
+
+Performance tab: Record timeline, see long tasks, JS execution flame chart, which function took how long, where main thread blocked.
+
+Memory tab: Take heap snapshots, see memory leaks - objects that should have been GCed but still retained. Allocation timeline shows growing memory.
+
+4. Sources and snippets:
+
+We can edit code directly in Sources tab and save with Ctrl+S, it hot-replaces in browser without reload - useful for quick fix testing.
+
+Snippets: Small scripts we save in DevTools to run anytime on page, for automation.
+
+Overrides: Map remote file to local file, so we can debug production code locally.
+
+5. Debugging async code:
+
+This is trickier because async stack gets lost.
+
+Modern DevTools have async stack traces - if enabled, call stack shows where async operation was initiated, not just where it settled.
+
+For promises, we can pause on `await` line and see resolved value. For unhandled promise rejections, DevTools shows warning with stack.
+
+We can also use "Pause on caught exceptions" to catch errors that are being caught but still wrong.
+
+6. Debugging http://Node.js:
+
+Same concepts but in terminal or inspector.
+
+We can run `node --inspect file.js` and connect Chrome DevTools to Node via `chrome://inspect`. Or use `--inspect-brk` to pause at start.
+
+VS Code built-in debugger: We add http://launch.json, set breakpoints directly in editor, inspect variables, watch.
+
+`node --trace-warnings`, `--trace-uncaught` give better stacks.
+
+7. Strategies we follow:
+
+Reproduce consistently first, isolate minimal case. Use binary search - comment half code, see if bug remains, narrow down.
+
+Check assumptions: Is variable really what we think? Is function actually called? Is API returning what we expect?
+
+Read stack trace from bottom to top - where call originated.
+
+For production bugs we can't reproduce locally, we use source maps to map minified code to original, and logging services like Sentry that capture stack and breadcrumbs.
+
+And finally, we prevent bugs with linters like ESLint, type checking with TypeScript, and unit tests - debugging is cheaper when we catch early.

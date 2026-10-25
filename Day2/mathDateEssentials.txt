@@ -1,0 +1,31 @@
+JavaScript Numbers - Essentials:
+
+Numbers in JavaScript are all 64-bit floating point, there is no separate int or float type. It means both integer and decimal values are of type `number`. Special values are `NaN` which means Not-a-Number for invalid calculations, `Infinity` and `-Infinity`. Because of floating point, operations like 0.1 + 0.2 are not precise. There is also `BigInt` for very large integers beyond safe limit.
+
+Key behaviors: JavaScript has safe integer limit from -2^53+1 to 2^53-1. Any operation outside this can lose precision. Numbers can be written in decimal, exponential, hex, octal, binary forms.
+
+Math - Essentials:
+
+Math is a built-in object, not a constructor, so We cannot create instance of it. It provides properties and methods for mathematical constants and operations.
+
+It includes: rounding methods like floor, ceil, round, trunc. Absolute value, power, square root, min/max, random. Trigonometric methods like sin, cos, tan.
+
+`Math.random()` is important - it gives a random number between 0 inclusive and 1 exclusive. We have to use formula to get random in a specific range.
+
+Math operations work on numbers and always return a number value.
+
+Date - Essentials:
+
+Date is used to work with dates and times. JavaScript Date is based on milliseconds since January 1, 1970 UTC, called epoch time.
+
+There are 4 ways to create Date: new Date(), new Date(milliseconds), new Date(date string), new Date(year, month, day, hours, minutes, seconds). Month is 0-indexed, so January is 0.
+
+Date has two types of methods: local time methods and UTC methods. Local methods work according to user's system timezone, UTC methods work on universal time.
+
+We can get components like year, month, date, hours, minutes, seconds, milliseconds, day of week. And we can set them too.
+
+Date can do comparison and difference because internally it's a number of milliseconds. We can subtract two dates to get time difference.
+
+Main issue with Date: Parsing date strings is inconsistent across browsers, and timezone handling is complex. That's why libraries like date-fns or http://Day.js are often used for complex date work.
+
+For current timestamp, we can get milliseconds using `Date.now()` without creating a new Date object.

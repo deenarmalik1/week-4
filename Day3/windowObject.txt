@@ -1,0 +1,53 @@
+Window Object in Browser:
+
+Window is the global object in browsers. It represents the browser window/tab that contains the DOM document. It has a dual role: global scope and browser API container.
+
+1. As Global Object:
+
+In browser, `window` is the implementation of Global Object. All global JavaScript entities live on it.
+
+- `var` variables and function declarations made in global scope become properties of window.
+- `let` and `const` at global scope don't become direct properties of window but are still in global scope and accessible via `globalThis`.
+- All built-ins like `Object`, `Array`, `console`, `Math`, `setTimeout`, `fetch` are properties of window.
+- So we can call `alert()` or `window.alert()`, both same. we can often omit `window.` prefix.
+
+`window.window` points to itself, `window.self` also points to itself, and `globalThis` equals `window` in browsers.
+
+2. As Browser Window API:
+
+This is the bigger part. Window provides APIs to control and get information about the browser window itself, not part of JavaScript language, provided by browser.
+
+Main groups:
+
+a:- Window Properties:
+- `window.document` - the DOM document loaded
+- `window.location` - URL info, can redirect page
+- `window.history` - session history, back/forward navigation
+- `window.navigator` - browser and OS info
+- `window.screen` - screen dimensions
+- `window.innerWidth/innerHeight`, `outerWidth/outerHeight` - viewport size
+- `window.localStorage`, `sessionStorage` - storage
+- `window.console`, `window.alert`, `confirm`, `prompt`
+
+b:- Window Methods:
+- `window.open()`, `window.close()` - open/close windows/tabs
+- `window.moveTo()`, `resizeTo()` - move/resize (often blocked)
+- `window.scroll()`, `scrollTo()`, `scrollBy()`
+- `window.setTimeout()`, `setInterval()`, `clearTimeout()`, `clearInterval()`
+- `window.fetch()`, `window.atob()`, `btoa()`
+- `window.addEventListener()` for window events like resize, load
+
+c:- Window Events:
+- `load` - page fully loaded
+- `resize` - window resized
+- `scroll`
+- `online/offline`
+
+Important Characteristics:
+
+- Global Scope: Any variable we access that is not found locally, JS goes to window to find it.
+- One window per tab. Iframe gets its own separate window object.
+- Window is huge, so we need to avoid polluting global scope with too many variables on window, causes naming collisions.
+- In modern modules (`type="module"`), top-level `var` does NOT become window property, modules have their own scope.
+
+In short: Window is both where JavaScript globals live and our handle to control the browser tab itself.

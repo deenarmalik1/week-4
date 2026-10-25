@@ -1,0 +1,48 @@
+JavaScript modules are how we split code into separate files and share functionality between them. Without modules, everything would be global and collide.
+
+Why we need modules:
+
+Initially JS had no module system. All scripts loaded in global scope, variables leaked, order mattered, dependency management was manual. Modules solve that by giving each file its own scope. Nothing is global unless we explicitly export it.
+
+Two main systems we work with:
+
+1.  CommonJS (CJS) - the http://Node.js classic system. Uses `require()` to import and `module.exports` to export. It's synchronous, loads at runtime. Historically dominant in Node. Dynamic - we can require inside if condition, inside function.
+
+2.  ES Modules (ESM) - the modern standard, official JS spec. Uses `import` / `export`. Syntax is static, meaning imports must be at top level, not inside if. This static nature allows tools to do tree-shaking - removing unused code at build time. ESM can be asynchronous. Browsers support ESM natively via `<script type="module">`. Node supports both now, but ESM is future.
+
+How ES Modules work for us:
+
+Each module is a file. Code inside module is in strict mode by default, and `this` at top level is undefined, not window.
+
+Export: Two types.
+- Named exports: we can have many per file. Each has name. Import must use same name with destructuring syntax.
+- Default export: only one per file. Can be any value - function, class, object. Import name can be anything we choose.
+
+Import: Path matters. For relative files we need `./` or `../`. For npm packages we use bare specifier like `"react"`. Import creates live binding, not copy. If exporting module changes value of exported variable, importing module sees updated value. This is different from CommonJS which copies value at require time.
+
+Execution: Modules are evaluated once, then cached. If we import same module in 10 files, code runs only first time, same instance shared. That's how singleton pattern works naturally.
+
+Circular dependencies: ESM handles better than CJS because of live bindings, but still tricky. If A imports B and B imports A, one will get partially initialized module. Best to avoid.
+
+Module resolution:
+
+Browser: Requires full URL or relative path, with extension mandatory like `./utils.js`. No automatic extension resolving.
+
+Node: More complex - it checks `node_modules`, respects `package.json` `"type": "module"` vs `"commonjs"`, allows extension omission for CJS historically, for ESM needs extension.
+
+Bundlers like Webpack, Vite, Rollup: They implement their own resolution to make developer experience smooth, allowing omitting extensions, handling alias.
+
+Key behaviors we rely on:
+
+- Modules are deferred by default in browser - they don't block HTML parsing, like `defer`.
+- Modules always use strict mode, no need for `"use strict"`.
+- Top-level `await` is allowed in ESM, not in CJS or normal scripts. We can await directly at top level of module, module evaluation waits for it.
+- Dynamic import: `import()` function. Returns promise. We can use it conditionally to lazy-load module - critical for code splitting and performance. This works in both CJS and ESM environments.
+
+When to use what:
+
+Today, we write ESM for everything new. Use named exports for utilities where multiple things exported, use default export for main component of file like React component, Express router.
+
+CommonJS still exists in legacy Node projects and some libraries, but ESM interop exists - we can import CJS from ESM but with limitations.
+
+Modules give us encapsulation, reusability, maintainability, and enable tooling like tree-shaking, code-splitting, which are essential for performance.

@@ -1,0 +1,81 @@
+
+
+What is Promise ?:-
+
+Promise is an object we get that represents future value of our async operation. Instead of getting value immediately, we get a promise that says - we will give you value later, or we will give error later.
+
+Before promises, we only had callbacks and we fell into callback hell. Promises gave us better way to handle async for us - flatter, chainable, with proper error handling.
+
+1. States - Lifecycle We See:
+
+Promise has 3 states for us:
+
+- Pending: Initial state. We started async work, we are waiting. Neither fulfilled nor rejected. This is where we are during network request or timer.
+
+- Fulfilled / Resolved:* Async work completed successfully. We have value. We move from pending to fulfilled. Once fulfilled, we stay fulfilled forever - state is locked, can't change.
+
+- Rejected: Async work failed. We have error/reason. We move from pending to rejected. Also locked forever once rejected.
+
+Important for us: Promise can go only once from pending to either fulfilled or rejected. After that it's settled and immutable. We can't go from fulfilled to rejected or vice versa.
+
+2. Creation - How We Create Promise:
+
+We create promise using `new Promise` constructor. It takes executor function with two arguments we get: `resolve` and `reject` - both are functions provided to us by JS.
+
+Inside executor, we do our async work. If we succeed, we call `resolve(value)` - this moves promise to fulfilled with that value. If we fail, we call `reject(error)` - moves to rejected.
+
+Executor runs synchronously immediately when we create promise. But resolve/reject happens async later.
+
+We typically wrap old callback-based APIs into promise for us to make them chainable.
+
+3. .then() - How We Handle Success:
+
+`.then()` is how we say what to do when promise fulfills.
+
+It takes up to two callbacks: `onFulfilled` and optional `onRejected`. But we mostly use only first one and use `.catch()` for errors.
+
+When promise is fulfilled, JS puts our `.then` handler into microtask queue and runs it later.
+
+What makes `.then()` powerful for us is it always returns a new Promise. So we can chain.
+
+- If we return a normal value from `.then()`, next `.then()` in chain receives that value, wrapped in resolved promise.
+- If we return another promise from `.then()`, next `.then()` waits for that promise to settle.
+- If we throw error inside `.then()`, it becomes rejected promise and goes to next `.catch()`.
+
+So `.then()` doesn't block us, it registers handler and immediately returns new promise pending.
+
+4. .catch() - How We Handle Errors:
+
+`.catch()` is actually just sugar for `.then(null, onRejected)`. It's how we handle rejection.
+
+We use it to catch any error that happened in promise chain above it.
+
+If we have error in original promise, or we threw error in any previous `.then()`, execution skips all `.then()` success handlers until it finds nearest `.catch()`.
+
+This is huge improvement over callbacks for us - we don't need to check error at every step. We can have one `.catch()` at end to handle all errors from chain.
+
+After `.catch()`, if we handle error and return value, chain can continue to next `.then()` as fulfilled. If we re-throw or return rejected promise, it stays rejected.
+
+We also have `.finally()` which runs whether fulfilled or rejected - we use for cleanup like hiding loader.
+
+5. Chaining .then() - Why It Matters For Us:
+
+Chaining is the core reason we love promises.
+
+Instead of nesting callbacks inside callbacks, we chain `.then()` one after another vertically.
+
+How chain works for us:
+
+We start with a promise, e.g., fetch user. We `.then()` to get user, inside we return another promise to fetch posts. Since `.then()` returns promise, next `.then()` in line waits for that posts promise. Then next `.then()` gets posts and returns promise for comments, and so on.
+
+So our async flow becomes linear top-to-bottom, not pyramid to right. We can read like synchronous steps but it's async under hood.
+
+Each `.then()` gets result of previous step. We can transform data along way.
+
+And error handling becomes centralized - one `.catch()` at end can catch error from any step in chain. In callback hell we had to handle at each level.
+
+Also chaining gives us composition - we can return value, we can return promise, we can branch. We regained control - promises guarantee our handlers are called only once, asynchronously, and we don't give control to third party like callbacks.
+
+For us, this chaining is what led to async/await later - async/await is just syntactic sugar over same chaining, but under hood it's still `.then()` chain.
+
+So states tell us where we are, creation is how we wrap async, `.then()` is for success and chaining, `.catch()` is for centralized error handling, and chaining is how we avoid callback hell and write readable sequential async logic.

@@ -1,0 +1,15 @@
+Call Stack is a data structure that JavaScript uses to keep track of execution contexts. It works on Last In, First Out principle - LIFO.
+
+When JavaScript starts, it creates Global Execution Context and pushes it to the bottom of the stack. This stays there till program ends.
+
+Whenever a function is called, a new Function Execution Context is created for it and pushed on top of the stack.
+
+If that function calls another function inside it, that new function's context is pushed on top again.
+
+So the function at the top of the stack is always the one currently executing.
+
+When a function finishes its execution, its context is popped off from the stack and control goes back to the context below it.
+
+JavaScript is single-threaded, so it has only one Call Stack and can do only one thing at a time. It executes contexts one by one in order.
+
+If functions keep getting pushed without being popped - like in infinite recursion - the stack keeps growing and eventually overflows, causing Stack Overflow error.

@@ -1,0 +1,45 @@
+1. try...catch...finally and throw - our sync error handling:
+
+`throw` is how we create an error intentionally. When we `throw` something, JS immediately stops normal execution of that function and looks for nearest `catch` block. We can throw anything, an `Error` object, string, number, but best practice is to throw `Error` or custom Error subclass so we get stack trace and message.
+
+`try` defines block we want to attempt. If no error occurs inside try, catch is skipped.
+
+`catch` catches error. When any error happens inside try, either thrown by us or runtime error like `ReferenceError`, `TypeError`, execution jumps to catch. Catch receives error object with properties like `name`, `message`, `stack`.
+
+One key thing we need to remember: try...catch only catches synchronous errors in same execution context, plus errors from `await` inside async function. It does NOT catch errors that happen inside asynchronous callbacks like `setTimeout` or event handlers unless that callback itself has its own try...catch.
+
+`finally` always runs, regardless of success or failure, whether we returned from try or threw from catch. We use it for cleanup - like hiding loader, closing file, releasing lock. Even if we have return inside try, finally still executes before function actually returns.
+
+Nesting: We can nest try...catch, and we can re-throw from catch if we want to handle partially and let outer catch handle rest. That's how we build layers - inner catch does logging or partial recovery, then throws again.
+
+Error types we commonly see: `SyntaxError` - parsing fails, can't be caught inside same file because parsing happens before execution. `ReferenceError` - variable not defined. `TypeError` - wrong type operation. `RangeError`, `URIError`. All inherit from `Error`.
+
+Custom errors: We create class extending Error, set name, to differentiate our domain errors from system errors. Then in catch we can check `instanceof` to handle differently.
+
+2. Errors in Promises - our async error handling
+
+Promises have their own error channel, separate from try...catch.
+
+When a promise executor calls `reject()` or throws inside executor, promise becomes rejected.
+
+If we have `.then()`, errors go to next `.catch()`. Promise chain skips all subsequent `.then()` success handlers until it finds a `.catch()`. This is like async version of try...catch.
+
+Important behavior: If we throw inside `.then()` handler, that doesn't crash program, it converts that promise into rejected promise, so next `.catch()` in chain handles it. So throw inside then is same as reject.
+
+If we don't have `.catch()` anywhere, we get Unhandled Promise Rejection - modern browsers and Node will log warning, but execution continues. We must always end promise chains with catch, or use global `unhandledrejection` event as safety net.
+
+With `.finally()` on promises - similar to try finally, it runs on both fulfilled and rejected, doesn't receive value, used for cleanup. And it doesn't change result unless it throws.
+
+Now bridging both worlds: `async/await`
+
+When we use `async` function, we can use try...catch for promises. Inside async function, `await` unwraps promise - if promise fulfills, we get value, if promise rejects, await throws that rejection as error, which we catch with regular try...catch. This is why async/await feels synchronous.
+
+If we don't use try...catch around await, that rejection becomes rejection of async function itself, which caller must catch with `.catch()` or try...catch around its await.
+
+Difference we should internalize:
+- Sync throw -> caught by immediate try...catch
+- Throw inside promise executor or inside `.then()` -> becomes promise rejection -> caught by `.catch()`
+- Rejection from `await` -> becomes throw inside async function -> caught by try...catch inside async function
+
+Best practices we follow:
+We don't silently swallow errors, we either handle or re-throw or log. We use finally for cleanup, not for logic. We throw Error objects not strings. We differentiate operational errors like network failure that we can retry, vs programmer errors like TypeError that we should fix.

@@ -1,0 +1,33 @@
+Execution Context in JavaScript is how JavaScript understands and runs our code.
+
+We can think of it as a container or an environment that is created every time our code runs, where all the necessary information for that run is stored.
+
+It has 2 main parts:
+
+1. Memory Component - also called Variable Environment:
+This is where all variables and functions are stored in memory before execution starts. JavaScript scans our code first and remembers what variables and functions exist.
+
+2. Code Component - also called Thread of Execution:
+This is where code is actually executed line by line.
+
+Types of Execution Context:
+
+Global Execution Context:
+This is the default context. It's created when our file starts. There's only one global context and it creates the global object which is window in browser, and this points to it.
+
+Function Execution Context:
+Every time we call a function, a new execution context is created just for that function. So there can be many.
+
+Eval Execution Context:
+Created inside eval function, rarely used.
+
+Phases:
+
+Phase 1 - Memory Creation Phase:
+JavaScript goes through the whole code and allocates memory for variables with undefined value, and stores full function definitions.
+
+Phase 2 - Execution Phase:
+Now it executes line by line, assigns actual values, and runs function calls. For every function call, it again creates a new execution context and pushes it to Call Stack.
+
+Call Stack:
+It's a stack that manages these contexts. The Global context is at bottom, when a function is called its context is pushed on top, when function finishes its context is popped off

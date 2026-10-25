@@ -1,0 +1,52 @@
+1. setTimeout and setInterval - Our Timers:
+
+These are timers we use when we want to delay or repeat something.
+
+`setTimeout` lets us say - run this function after at least X milliseconds. We should remember it's not exact, it's minimum time. After timer finishes, our callback goes to macrotask queue and waits for call stack to be empty.
+
+`setInterval` is similar but it repeats - run every X milliseconds until we stop it with `clearInterval`. We need to be careful with it because if our task takes longer than interval, intervals can pile up.
+
+Both don't block us. We set them and we continue. We use them for debouncing, throttling, animations, polling.
+
+2. API Calls / Fetch / Network Requests - Our Most Common Async:
+
+This is probably where we use async the most.
+
+When we need data from server, we make HTTP request - `fetch`, `axios`, `XMLHttpRequest`. Network takes time, we can't block our main thread waiting for response.
+
+So when we call `fetch`, browser starts network request in background thread. We immediately get back a Promise pending. We continue. When response comes, our `.then` or `await` code runs.
+
+Same goes for us with `async` database calls, file uploads. All I/O is async for us to keep UI responsive.
+
+We also have to handle errors here - network failure, 404, timeout. That's why we wrap our fetch in try/catch when we use async/await.
+
+3. Promises and async/await - Our Control Flow Tools:
+
+Promises themselves are async mechanism. When we resolve a promise, its `.then` callback goes to microtask queue, not immediately.
+
+`async/await` is how we make our async code readable. When we `await`, we pause our async function, but we don't block main thread - other code outside can still run.
+
+4. DOM Events - User Interaction We Wait For:
+
+Events like `click`, `scroll`, `keydown` are async in nature. We don't know when user will click. So we register listener and we continue. When user eventually clicks, browser puts event handler in task queue and event loop runs it.
+
+So we are always waiting asynchronously for user.
+
+5. Other Common Async Tasks We Use:
+
+- `setImmediate` / `process.nextTick` in http://Node.js - we use to defer execution.
+- File reading in http://Node.js - `fs.readFile` async version.
+- `requestAnimationFrame` - we use for animations, it tells browser to run our callback before next repaint. Async and optimized for us.
+- `queueMicrotask` and `MutationObserver` - they go to microtask queue, we use when we want something to run right after current sync but before next render or macrotask.
+- Web Workers - when we have really heavy CPU work, we offload to another thread. Communication via messages is async.
+- IndexedDB, Web Storage events, Image loading - all async.
+
+How We Should Think About Priority:
+
+When multiple async things finish around same time, order matters for us:
+
+Our call stack runs first, then we drain all microtasks (promises, queueMicrotask), then we run one macrotask (setTimeout, setInterval, fetch callback, event handler), then we again check microtasks, and repeat.
+
+So if we have a `Promise.resolve()` and `setTimeout(0)`, promise will always run before timeout, even if timeout was set first. That's because microtask queue has higher priority for us.
+
+In short for us: Timers let us delay, API calls let us talk to server without freezing, events let us react to user, and event loop with two queues makes sure we stay non-blocking and responsive.

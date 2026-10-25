@@ -1,0 +1,17 @@
+A closure is when an inner function remembers and can access variables from its outer function, even after the outer function has finished executing.
+
+In JavaScript, every time a function is created, it keeps a reference to its lexical environment, which is the scope where it was defined. So the inner function doesn't just remember the values, it remembers the actual variables.
+
+Normally, when an outer function finishes, its variables should be destroyed. But if its inner function is still alive and is using those variables, JavaScript does not destroy them. They stay in memory because the inner function holds a closure over them.
+
+Why closure is important:
+
+1.  Data Privacy / Encapsulation: we can create private variables that cannot be accessed from outside, only through inner functions.
+
+2.  State Preservation: The inner function can keep state between calls without using global variables.
+
+3.  Function Factories: we can create functions that are customized based on outer variables.
+
+4.  Basis for many JavaScript features: Callbacks, event handlers, `setTimeout`, module pattern, currying, memoization - all work because of closures.
+
+In short, closure is the ability of a function to remember its birthplace scope forever.

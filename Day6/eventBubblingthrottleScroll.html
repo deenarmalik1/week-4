@@ -1,0 +1,37 @@
+ Traverse DOM, use event bubbling, and throttle scroll event :
+
+ <div id="parent"><button class="child">Btn1</button><button class="child">Btn2</button></div>
+<div id="log"></div>
+<script>
+// Traverse DOM
+let parent = document.getElementById("parent");
+console.log(parent.children); // we children
+console.log(parent.firstElementChild);
+console.log(parent.querySelectorAll(".child"));
+parent.childNodes.forEach(n => console.log(n));
+
+// Event bubbling - one listener on parent handles all child clicks
+parent.addEventListener("click", (e) => {
+  if (e.target.classList.contains("child")) {
+    console.log("we bubbling caught", e.target.textContent);
+  }
+});
+
+// Throttle scroll event
+function throttle(fn, delay) {
+  let last = 0;
+  return function(...args) {
+    let now = Date.now();
+    if (now - last >= delay) {
+      last = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+window.addEventListener("scroll", throttle(() => {
+  console.log("we throttled scroll", window.scrollY);
+  document.getElementById("log").textContent = `we scrollY ${window.scrollY}`;
+}, 300));
+</script>
+ 

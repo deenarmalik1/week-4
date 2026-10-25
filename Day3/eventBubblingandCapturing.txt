@@ -1,0 +1,46 @@
+Event Bubbling and Capturing in JavaScript:
+
+When we trigger an event on an element, it doesn't just happen on that element alone. Our browser actually runs through 3 phases for every event. Let's see how we experience it.
+
+1. The 3 Phases - How Our Event Travels:
+
+When we click a nested element, say we have a `div` inside a `section` inside `body`, and we click the `div`:
+
+- Capturing Phase - Top Down: First, our event starts from the very top, `window` -> `document` -> `html` -> `body` -> `section` -> and finally going down towards our target `div`. It's like we are drilling down. This is also called trickling. In this phase, if we have listeners with `capture: true`, they will fire.
+
+- Target Phase: Now our event has reached the actual element we clicked - the `div`. Listeners on that target itself fire.
+
+- Bubbling Phase - Bottom Up: Then our event bubbles back up. `div` -> `section` -> `body` -> `html` -> `document` -> `window`. It's like a bubble in water rising up. By default, when we do `addEventListener`, we are listening in this bubbling phase.
+
+So our full journey is down, at target, then up.
+
+2. Capturing:
+
+- We have to explicitly ask to listen in capturing phase by passing `{ capture: true }` as third option.
+- We rarely use it, but it can be useful when we want to intercept event before it reaches children.
+- For example, if we want to catch all clicks on our page at document level before any button handles it, we could use capturing.
+
+3. Bubbling:
+
+- This is the default behavior for most events when we set up listeners. When we click a child, our parent's click listener will also fire, because event bubbled to it.
+- This is why `event.target` vs `event.currentTarget` matters to us. `target` is always where we started (our deepest element), `currentTarget` is where we are currently handling it as it bubbles up.
+- Not all events bubble. For us to remember: `focus`, `blur`, `load`, `scroll`, `mouseenter`, `mouseleave` do not bubble. But `click`, `keydown`, `submit`, `mouseover` do bubble.
+
+4. How We Control It:
+
+- When we want to stop our event from going further up, we can call `event.stopPropagation()` inside our handler. So if we stop it on child, our parent handlers won't run.
+- If we have multiple listeners on same element for same event, `stopPropagation` won't stop those. For that we use `event.stopImmediatePropagation()` - it stops everything.
+- Important for us to know: `stopPropagation` does NOT stop browser's default action. For that we still need `preventDefault()`. They are separate.
+- We can also choose to listen only once with `{ once: true }` to auto-remove.
+
+5. Why This Matters to Us - Event Delegation:
+
+This bubbling behavior is actually a superpower for us.
+
+Instead of adding 100 listeners to 100 `li` elements, we can add just ONE listener on our parent `ul`. When we click any `li`, event bubbles to `ul`, and we can check `event.target` to see which `li` we clicked.
+
+This helps us:
+- Write less code and use less memory
+- Handle dynamically created elements - if we add new `li` later, we don't need to add new listener, our parent listener already catches it via bubbling
+
+So in short, when we interact, our event goes down in capturing, hits target, then bubbles up, and by default we work in bubbling phase.

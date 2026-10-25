@@ -1,0 +1,9 @@
+JavaScript is single-threaded because it was designed to be simple and to run in the browser.
+
+It has only one Call Stack and one Main Thread. It can execute only one piece of code at a time. It does one task, finishes it, then moves to the next.
+
+The reason for this design is historical. JavaScript was created to handle user interactions with web pages - like button clicks, form handling. If it had multiple threads accessing the DOM at the same time, it would create race conditions and complexity, where two threads try to change the same element simultaneously. Single thread avoids that and keeps DOM manipulation predictable.
+
+But single-threaded doesn't mean slow or blocking. JavaScript handles asynchronous tasks like API calls, timers, user events using Event Loop, Callback Queue, and Web APIs provided by the browser. It offloads heavy tasks to the browser, and when they are done, their callback is pushed to the queue and executed when the stack is empty.
+
+So it feels multi-tasking, but internally it only runs one thing at a time on the main thread.

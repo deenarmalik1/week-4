@@ -1,0 +1,12 @@
+IIFE stands for Immediately Invoked Function Expression.
+
+It's a function that is defined and executed immediately at the same time, right after creation. we don't need to call it separately later.
+
+The main idea is that a normal function declaration cannot be executed immediately, but if we wrap it as an expression, JavaScript treats it as a function expression, and then we can add parentheses at the end to invoke it instantly.
+
+Why it is used:
+
+1.  To avoid polluting global scope: Variables declared inside IIFE stay inside its own private scope and don't leak to the global scope. Before `let` and `const`, this was the main way to create private scope.
+2.  Data privacy and encapsulation: we can create private variables and expose only what we want to return.
+3.  To execute code once: Useful for initialization code that should run only once when script loads, like setting up config or creating a singleton.
+4.  Avoids naming conflicts: Since everything is inside its own scope, it prevents variable name collisions, especially useful when multiple scripts are loaded on same page.

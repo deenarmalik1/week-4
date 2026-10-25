@@ -1,0 +1,43 @@
+What is callback for us:
+
+In early JavaScript, when we wanted to do something async - like fetch data, wait for timer, read file - we didn't have promises. The only way we handled async was to pass a function as argument. We said to browser - when you finish this work, call this function back. That's callback.
+
+For single async task, it was fine for us. But problems started when we needed to do tasks one after another, where next task depends on previous result.
+
+How callback hell happens to us:
+
+Imagine we need to do flow like: we get user id, then we use that id to get user posts, then we use post id to get comments, then we use comment to get author.
+
+Each step is async, so we need to wait.
+
+With callbacks, what we do is we nest callback inside callback inside callback.
+
+So first we call getUser, inside its callback we call getPosts, inside that callback we call getComments, inside that we call getAuthor, and so on.
+
+Our code starts going deeper and deeper to the right - like a pyramid. That's why we also call it pyramid of doom.
+
+Why it is hell for us:
+
+- We lose readability: Our code grows horizontally, not vertically. It's hard for us to see sequence. We have to mentally track many levels of indentation.
+
+- We lose error handling: In synchronous code we have try/catch. In nested callbacks, we have to handle error at every level. If we miss one, error gets swallowed. And we repeat error handling logic everywhere. For us, it becomes messy - we check `if(err)` in every callback.
+
+- We lose control flow: What if we want to run two async tasks in parallel then wait for both? With callbacks, we have to manually manage counters. What if we want to retry? Loop? We have to build our own logic.
+
+- We get inversion of control:* This is big one for us. When we pass callback to another function, we give control of when and how many times our callback will be called. We trust third party code to call it correctly once, with right args. If that code calls our callback twice, or never calls, or calls synchronously vs async, we are in trouble. We lose trust.
+
+- We can't return or compose:* We can't simply `return` value from async callback to outer scope. So we can't compose or chain operations easily.
+
+How we tried to manage but still suffered:
+
+We tried to extract callbacks into named functions to reduce nesting, so instead of anonymous inline we defined `handleUser`, `handlePosts` separately. That helped readability a bit, but flow was still fragmented - our logic was scattered across many functions, not in one place.
+
+And we still had same error handling and inversion of control problems.
+
+That's why callback hell was not just about indentation, it was about maintainability and reliability for us.
+
+This pain is exactly why community created Promises for us - to flatten pyramid, to give us proper chaining, centralized error handling with `.catch()`, and to regain control - promises guarantee callback called once, async, and give us return value we can compose.
+
+And later async/await made it even more like synchronous flow for us.
+
+So callback hell is that stage where our async logic becomes deeply nested, unreadable, error-prone, and hard to maintain because we depend only on callbacks for sequencing.

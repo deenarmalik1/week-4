@@ -1,0 +1,80 @@
+Document Object:
+
+`document` is the entry point to the DOM. It's a property of `window` - `window.document`. While `window` represents the browser tab, `document` represents the actual HTML page loaded inside that tab.
+
+When browser loads HTML, it parses it and creates a tree-like object structure called DOM. `document` is the root of that tree.
+
+1. DOM Structure:
+
+DOM = Document Object Model. It's a live, hierarchical representation of HTML as nodes.
+
+Structure:
+
+- `document` is the root node, represents entire page.
+- `document.documentElement` is `<html>`
+- Inside that: `document.head` and `document.body`
+- Then inside body: all your elements, nested.
+- Everything in HTML becomes a Node: Element nodes, Text nodes, Comment nodes, Attribute nodes.
+
+Node Types:
+
+- Element Nodes: `<div>`, `<p>`, `<h1>` - the tags
+- Text Nodes: the actual text inside elements
+- Attributes are properties of element nodes
+
+Tree nature: Each node has parent, children, siblings.
+- `parentNode`, `parentElement`
+- `childNodes`, `children`, `firstChild`, `lastChild`
+- `nextSibling`, `previousSibling`
+
+Document is live - if we change DOM tree via JS, browser immediately re-renders page.
+
+2. Document Properties:
+
+- `document.URL`, `document.documentURI`
+- `document.title` - from `<title>` tag
+- `document.head`, `document.body`, `document.documentElement`
+- `document.characterSet`, `contentType`
+- `document.readyState` - loading, interactive, complete
+- `document.activeElement` - currently focused element
+- `document.images`, `links`, `forms`, `scripts` - collections
+- `document.cookie`
+
+3. Selecting Elements - Core of Document API:
+
+To manipulate page, we first need to find elements.
+
+a:- Legacy getElement methods - live and faster, but limited:
+
+- `getElementById(id)` - returns single element or null, fastest, ID should be unique.
+- `getElementsByClassName(className)` - returns live HTMLCollection of all elements with that class.
+- `getElementsByTagName(tagName)` - returns live HTMLCollection, e.g., all divs.
+- `getElementsByName(name)` - for form elements with name attribute.
+
+Returns HTMLCollection which is live - updates automatically if DOM changes.
+
+b:- Modern querySelector - more powerful:
+
+- `querySelector(selector)` - returns first element matching CSS selector or null. Accepts any CSS selector like `#id`, `.class`, `div > p`, `[type="text"]`, `ul li:first-child`.
+- `querySelectorAll(selector)` - returns static NodeList of all matches. Not live, snapshot at that time.
+
+`querySelector` is more flexible, we can do complex CSS queries in one call. It's the modern standard.
+
+c:- Searching within an element:
+
+Not just `document`, every element also has `querySelector` and `querySelectorAll`. So we can do `element.querySelector()` to search only inside that element's children, better for performance.
+
+d:- Traversal without selectors:
+
+- `closest(selector)` - goes up the tree to find nearest ancestor matching selector.
+- `matches(selector)` - checks if element itself matches selector.
+
+4. Creating and Manipulating:
+
+After selecting, document provides creation:
+
+- `createElement(tag)`, `createTextNode(text)`, `createAttribute()`
+- `appendChild()`, `removeChild()`, `append()`, `prepend()`, `before()`, `after()`, `remove()`
+- `innerHTML`, `textContent`, `innerText`, `setAttribute`, `getAttribute`, `classList`
+
+Summary: `document` is our JavaScript handle to the HTML page. DOM structure is tree of nodes, and `getElementById` and `querySelector` family are ways to locate nodes in that tree to read or change them.

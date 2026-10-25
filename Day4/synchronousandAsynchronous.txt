@@ -1,0 +1,57 @@
+Synchronous - How We Normally Think:
+
+Synchronous means one after another, blocking. When we run code synchronously, we do one thing at a time, and we must finish it before we move to next line.
+
+JavaScript by nature is single-threaded and synchronous. We have one call stack, one main thread. When we call a function, we push it to call stack, execute it fully, then pop it and move to next.
+
+So if we have a heavy loop that takes 3 seconds, our whole page freezes for 3 seconds. Our browser can't do anything else - we can't click, we can't scroll - because our main thread is busy. That's blocking behavior.
+
+Synchronous is predictable and simple for us. Order of execution is exactly order we wrote.
+
+Asynchronous - How We Handle Waiting:
+
+But our web world is full of waiting tasks. Fetching data from server, reading file, waiting for image to load, waiting for setTimeout, waiting for user to click. If we did all these synchronously, we would block our main thread every time.
+
+So we need asynchronous behavior - non-blocking.
+
+Asynchronous means we start a task, we hand it off, and we don't wait. We continue to next line. When that task finishes later, we get notified and we handle its result.
+
+How we achieve async in JS when JS is single-threaded? We use environment help.
+
+Our browser or http://Node.js provides Web APIs / C++ APIs outside JS engine. Things like `setTimeout`, `fetch`, `DOM events` are not part of JS language itself, they are provided by browser.
+
+When we call an async thing, what we actually do is:
+
+1. We call it, browser takes it and starts timer / network request in background on separate thread.
+2. We immediately continue - our call stack is free, we are not blocked.
+3. When background task finishes, browser puts our callback into a queue - either Callback Queue / Task Queue or Microtask Queue.
+4. Our Event Loop constantly checks - is call stack empty? If yes, it takes first thing from queue and pushes to call stack to execute.
+
+This is how we get non-blocking even with single thread.
+
+Two Types of Async Queues We Should Know:
+
+- Microtask Queue: For promises, `queueMicrotask`, `MutationObserver`. This has higher priority. Our event loop empties microtask queue completely before moving to next task.
+
+- Macrotask / Task Queue: For `setTimeout`, `setInterval`, `setImmediate`, I/O, UI events, `fetch` callbacks. Lower priority than microtasks.
+
+This priority difference is crucial for us to understand execution order.
+
+Evolution Of How We Write Async Code:
+
+- Initially we used callbacks - we pass a function to be called later. But this led to callback hell when we nested many async tasks.
+
+- Then we got Promises - an object representing future value. Pending, fulfilled, rejected. We chain with `.then()` and `.catch()`. This helped us flatten callback hell and gave us proper error handling.
+
+- Now we use async/await - syntactic sugar over promises. We mark function as `async` and we can `await` inside. It lets us write async code that looks synchronous to us, easier to read, but still non-blocking under the hood. When we await, we pause that function only, not whole thread.
+
+Why This Matters For Us:
+
+If we make everything sync, our UI freezes. So for us as developers:
+
+- We keep heavy CPU work off main thread if we can.
+- We use async for I/O, network, timers, events.
+- We must remember async order is not top-to-bottom, it's when task completes.
+- We need to handle errors properly in async flow, otherwise we get unhandled rejections.
+
+In short: Synchronous is blocking, line-by-line, we wait. Asynchronous is non-blocking, we start, we continue, and we handle result later via event loop. JavaScript itself is sync, but our browser environment makes async possible.

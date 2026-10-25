@@ -1,0 +1,37 @@
+Symbol in JavaScript:
+
+Symbol is a primitive data type introduced in ES6. Its main characteristic is that every Symbol value is guaranteed to be unique, even if they have the same description.
+
+We create a Symbol by calling `Symbol()` - it cannot be created with `new`. We can pass an optional description, but that description is just for debugging, it does not affect uniqueness.
+
+Main uses:
+
+1.  Unique Object Keys: The biggest use. We can add a property to an object using Symbol as key, and we are guaranteed it will never collide with any other property, even with same name. Useful for libraries to add hidden properties.
+
+2.  Privacy / Hidden Properties: Symbol properties are not enumerable in `for...in`, `Object.keys()`, or `JSON.stringify()`. They are somewhat hidden, though we can still access them with `Object.getOwnPropertySymbols()`.
+
+3.  Well-known Symbols: JavaScript has built-in Symbols like `Symbol.iterator`, `Symbol.toStringTag`, `Symbol.hasInstance`. we can use them to customize behavior of our objects, like making an object iterable by defining `[Symbol.iterator]`.
+
+There are two types: Local Symbols created by `Symbol()` are always unique. Global Symbols created via `Symbol.for(key)` share a global registry - if we call `Symbol.for("app.id")` twice, we get the same Symbol.
+
+BigInt in JavaScript:
+
+BigInt is also a primitive type for representing integers of arbitrary size. Normal `number` type is 64-bit float and can only safely represent integers up to `2^53 - 1` which is `Number.MAX_SAFE_INTEGER`. Beyond that, precision is lost.
+
+BigInt solves that. It can hold numbers as large as we have memory for.
+
+Creation: Add `n` at end of integer literal, or use `BigInt()` constructor.
+
+Key behaviors:
+
+1.  Cannot mix with Number: We cannot do operations between BigInt and Number directly. We have to convert explicitly. Otherwise it throws TypeError. This is intentional to avoid silent precision loss.
+
+2.  No floating point: BigInt is only for integers. No decimal part. Division of BigInt truncates the decimal, it does not give float.
+
+3.  Operations: Supports `+ - _ / % _*` and comparison operators. Does not support `Math` methods. `Math.sqrt()` will not work on BigInt.
+
+4.  Truthy / Typeof: `typeof 10n` is `bigint`. It's falsy only when `0n`.
+
+Use case: When we work with very large integers like cryptography, large IDs from databases, timestamps in nanoseconds, high-precision financial calculations where 53-bit is not enough.
+
+In short: Symbol is for uniqueness and avoiding collisions, BigInt is for working beyond safe integer limit.

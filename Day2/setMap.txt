@@ -1,0 +1,52 @@
+Set in JavaScript:
+
+Set is a collection of unique values. Each value can occur only once in a Set. It can hold any data type, primitive or object references.
+
+How it differs from Array:
+
+1.  Uniqueness: Array allows duplicates, Set automatically removes duplicates and only keeps unique values.
+2.  Order: Both maintain insertion order.
+3.  Access: Array is indexed, you access via index. Set has no index, you can't do `set[0]`. You check existence with `has()`.
+4.  Performance: For checking if a value exists, Set is much faster than Array, especially for large collections, because Array has to loop and Set is optimized for lookup.
+5.  Size: Array uses `length`, Set uses `size` property.
+6.  Duplicates removal: Set is the easiest way to remove duplicates from an array.
+
+We should use Set when we need a list of unique values and fast existence check.
+
+Map in JavaScript:
+
+Map is a collection of key-value pairs, similar to Object, but more powerful.
+
+How it differs from Object:
+
+1.  Key Type: In Object, keys can only be string or symbol. In Map, keys can be of any type, including objects, functions, numbers, NaN. This is the biggest advantage.
+2.  Order: Map maintains insertion order of keys. Object also maintains order now, but historically it didn't, and Map guarantees it.
+3.  Size: Map has a direct `size` property. Object doesn't, we have to calculate manually via `Object.keys().length`.
+4.  Performance: Map is optimized for frequent additions and removals of key-value pairs. Object was not designed for that.
+5.  Iteration: Map is directly iterable with `for...of`, `forEach`. Object requires `Object.keys()`, `Object.values()`, `Object.entries()` to iterate.
+6.  Prototype Pollution: Object has prototype, so it has default keys like `constructor`, `toString`. Map doesn't have that issue, it's a pure data structure.
+7.  No Default Keys: So we can safely use any key without conflict.
+
+We should use Map when we need key-value pairs with non-string keys, or need frequent add/delete and guaranteed order.
+
+WeakSet and WeakMap:
+
+WeakSet and WeakMap are weak versions of Set and Map.
+
+WeakSet:
+
+1.  It only holds objects, not primitive values.
+2.  Objects are held weakly, meaning if there are no other references to an object in WeakSet, it will be garbage collected automatically. It does not prevent garbage collection.
+3.  Not iterable, you cannot loop over it. No `size` property. we can only add, has, delete.
+
+Use case: To track objects without preventing them from being garbage collected. Like marking if an object has been visited.
+
+WeakMap:
+
+1.  Keys must be objects, values can be anything.
+2.  Keys are held weakly, if key object has no other reference, entry is removed automatically by garbage collector.
+3.  Not iterable, no `size`, no `clear()`. Only `get`, `set`, `has`, `delete`.
+
+Use case: Most important use case is for storing private data for objects or caching. we can attach data to an object without modifying the object itself, and when object is deleted, cached data is also automatically cleaned up. This prevents memory leaks.
+
+Memory management is the main reason for both WeakSet and WeakMap - they allow JavaScript engine to clean up memory automatically.

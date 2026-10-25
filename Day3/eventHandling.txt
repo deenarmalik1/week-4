@@ -1,0 +1,78 @@
+Event Handling in JavaScript:
+
+Event handling is how JS reacts to things happening in browser - user actions, page lifecycle, browser actions. The core idea is event-driven programming - we don't call code, browser calls our code when something happens.
+
+1. addEventListener:
+
+This is the modern, standard way to listen for events.
+
+How it works: We take a DOM element and tell it - "when this event happens on us, call this function". The browser maintains an internal list of listeners for each element per event type.
+
+Syntax is `target.addEventListener(type, handler, options)`.
+
+- `type` - string name like click, submit, keydown, mouseover, load, DOMContentLoaded
+- `handler` - function to be called, also called listener or callback. It receives an Event object automatically.
+- `options` - optional object or boolean.
+
+    - `once: true` - listener auto-removes after firing once
+    - `capture: true` - listen in capturing phase instead of bubbling
+    - `passive: true` - tells browser we won't call preventDefault, improves scroll performance
+
+Key advantages over old `onclick = function` property:
+
+- We can add multiple listeners for same event on same element. `onclick` property can hold only one.
+- We can control phase (capture vs bubble).
+- We can have options like once, passive.
+- We can remove it later.
+
+We can attach listeners to any EventTarget, not just elements - `window`, `document`, `XMLHttpRequest`, `element` all support it.
+
+2. Removing Listeners - removeEventListener:
+
+We remove with `target.removeEventListener(type, sameHandler, sameOptions)`.
+
+Crucial rule: To remove, We must pass the EXACT same function reference that we added. Not a function that looks same, the same reference in memory.
+
+This is why anonymous arrow functions cannot be removed if we define them inline - we lost reference.
+
+If we used `capture: true` while adding, we must pass same `capture: true` while removing, otherwise removal fails.
+
+`{ once: true }` listeners auto-remove themselves after execution, no need to call remove manually.
+
+Removing is important to prevent memory leaks, especially in SPAs where elements are created and destroyed, and to avoid duplicate handling.
+
+3. Event Object - http://event.target vs http://event.currentTarget:*
+
+When an event fires, browser creates an Event object and passes it to our handler as first argument, usually named `event`, `e`, or `evt`.
+
+It contains all info about event.
+
+event.target:
+
+- The actual origin where event started. The deepest element that triggered it.
+- It never changes during bubbling.
+- Example: We have a button with an icon inside. We click the icon. `event.target` will be the icon, not the button, because icon is where click originated.
+- It's the most specific element.
+- Very useful for Event Delegation - attaching one listener on parent and checking target to see which child was clicked.
+
+event.currentTarget:
+
+- The element to which the listener is currently attached and whose handler is currently executing.
+- It changes as event bubbles.
+- Example: We attach listener to `ul` but click on `li` inside. `target` is `li`, `currentTarget` is `ul` because handler is on `ul`.
+- Inside a normal function handler, `this` equals `currentTarget`. In arrow function, `this` is lexical, so we should use `currentTarget` to be safe.
+- If we attach listener directly to button and click button, target and currentTarget are same - both button.
+
+Bonus concept - Event Flow:
+
+This distinction exists because of bubbling.
+
+1.  Capturing phase: Event goes from `window` -> `document` -> ... down to target.
+2.  Target phase: Event reaches target.
+3.  Bubbling phase: Event goes back up from target -> parent -> ... to window.
+
+Most events bubble (click does, focus does not). `addEventListener` by default listens in bubbling phase. If we attach listener on parent, it will still fire when child is clicked because event bubbles up, then `target` != `currentTarget`.
+
+`event.stopPropagation()` stops bubbling, `event.stopImmediatePropagation()` stops other listeners on same element too, `event.preventDefault()` prevents browser's default action.
+
+In short: `addEventListener` adds, `removeEventListener` needs same reference to remove, `target` is where event started, `currentTarget` is where we are handling it.

@@ -1,0 +1,53 @@
+1. Global Object:
+
+Global Object is the top-level object provided by the JavaScript engine where all global variables, functions, and built-in objects live. we  can access it from anywhere.
+
+It is environment-dependent:
+- In browsers, global object is `window`
+- In http://Node.js, it's `global`
+- In Web Workers, it's `self`
+- To have a universal way, ES2020 introduced `globalThis` which points to global object in any environment.
+
+So `window` is the browser's implementation of Global Object.
+
+2. Window Object:
+
+Window is much more than just global object. It represents the browser window itself.
+
+It has two roles:
+
+a: As Global Object: All `var` declarations, functions declared globally, and `let/const` at top level conceptually become properties of window (var and function as direct properties, let/const not as direct enumerable properties but still accessible via globalThis). Also built-ins like `Array`, `console`, `setTimeout`, `fetch` are all properties of window.
+
+So when you do `window.alert()` or just `alert()`, it's same.
+
+b: As Browser Window Representation: It also contains browser-specific APIs to control the window.
+
+Things like `window.innerWidth`, `window.innerHeight`, `window.location`, `window.history`, `window.navigator`, `window.localStorage`, `window.open()`, `window.close()`. These have nothing to do with JavaScript language itself, they are provided by browser.
+
+3. DOM - Document Object Model:
+
+DOM is not part of JavaScript language. It's a separate API provided by browser.
+
+DOM is an object-oriented representation of the HTML page as a tree structure. Browser parses HTML and creates DOM tree.
+
+`document` is the entry point to DOM. `document` itself is a property of window: `window.document`.
+
+So hierarchy is:
+
+`window` -> top-most
+`window.document` -> the DOM document loaded in that window
+`document.documentElement` -> `<html>` tag
+... rest of DOM tree ...
+
+DOM provides methods like `document.getElementById`, `document.querySelector`, `element.addEventListener` to manipulate HTML.
+
+Relationship Summary:
+
+- `window` is the container. It's the global object in browsers.
+- `document` is a property of `window`. So DOM is accessed through window.
+- JavaScript engine gives you language. Browser gives you `window` and `document` APIs.
+- Scope chain: When JS looks for variable, it goes Local -> Global which is `window` in browsers.
+- We can omit `window.` prefix for global things because window is global scope. So `window.document` === `document`.
+- But `window` !== `document`. Window is the browser window, document is the page inside it. A window can contain many things, document is one of them. If we have iframe, we have different window and different document.
+
+In short: JavaScript needs an environment to run. Browser environment provides `window` as global object, and puts DOM API at `window.document` so we can control the webpage.

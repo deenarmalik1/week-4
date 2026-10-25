@@ -1,0 +1,49 @@
+Promise.all() - what we use when we need all to succeed:
+
+ `Promise.all()` is when we have multiple independent promises and we need all of them to be fulfilled before we proceed.
+
+We pass an array or iterable of promises to it. It returns a new promise.
+
+How it behaves :
+It runs all promises in parallel, not sequentially. It doesn't wait for one to finish to start next, it starts all at once.
+
+If all promises fulfill, then `Promise.all()` fulfills with array of results, in same order we passed, not in order they finished. That order guarantee is important for us.
+
+If even one promise rejects, `Promise.all()` immediately rejects with that first rejection reason, and it ignores results of other promises even if they later fulfill. This is fail-fast behavior.
+
+We use it when our next step depends on all data - like we need user, posts, and comments together before rendering page. If one fails, we can't proceed.
+
+Limitation we face: One failure kills whole batch. That's where other combinators help.
+
+Promise.race() - what we use when we need first settled:
+
+ `Promise.race()` is literally a race - whichever promise settles first, fulfilled or rejected, wins, and that result becomes result of race.
+
+We pass array of promises, it returns new promise that mirrors first settled promise.
+
+If first settled is fulfilled, race fulfills with that value. If first settled is rejected, race rejects with that error.
+
+We use it for timeouts for us - we race our actual fetch promise against a timeout promise that rejects after X seconds. Whichever comes first wins. If timeout wins, we reject. This gives us timeout control fetch doesn't have natively.
+
+We also use it when we have multiple sources for same data, like multiple CDNs, and we just need fastest one.
+
+But caveat for us: It doesn't cancel other promises. Other promises still continue running in background, we just ignore them. And it settles on first rejection too, even if later promise would have succeeded - that's risky.
+
+Promise.any() - what we use when we need first success:
+
+ `Promise.any()` is like opposite of `Promise.all()` in terms of failure tolerance, and like improved `race()` that ignores failures.
+
+It also takes array of promises and returns new promise. It waits for first promise to fulfill. As soon as one fulfills, `any()` fulfills with that value.
+
+It only rejects if all promises reject. If that happens, it rejects with AggregateError - special error that contains array of all rejection reasons.
+
+This is perfect  when we want redundancy - we try multiple sources, we don't care which succeeds, we just need one success. Like we try primary API, fallback API, cache - first that works we use.
+
+Compared to race, we prefer any when we want to ignore failures. Race would fail if fastest promise rejects, any would keep waiting for next promise to succeed.
+
+So  mental model:
+- all: we need all succeed, fail if one fails, parallel.
+- race: we need first settled, success or failure, use for timeout.
+- any: we need first success, fail only if all fail, use for fallback.
+
+There are two more we should know: `Promise.allSettled()` which never rejects and waits for all to settle with status, we use for when we want results of all regardless of failures. And `all`, `race`, `any` are the main three we compare.

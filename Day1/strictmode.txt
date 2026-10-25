@@ -1,0 +1,22 @@
+What is strict mode:
+
+Strict mode is a feature in JavaScript introduced in ES5 that makes JavaScript more strict about how code is written. It catches common coding mistakes and prevents use of unsafe features. Instead of failing silently, it throws errors. It also makes code more secure and allows JavaScript engines to optimize it better. It's basically a restricted, safer version of JavaScript.
+
+How to enable strict mode:
+
+Strict mode is enabled by adding the directive "use strict"; at the top.
+
+If we put it at the top of a file, it applies to the entire script. If we put it at the top of a function, it applies only to that function. In modules and classes, strict mode is automatically enabled by default, we don't need to write it.
+
+Differences in behaviour in strict mode:
+
+1.  No undeclared variables: we cannot create variables without declaring them with let, const, or var. It will throw ReferenceError.
+2.  No deletion of non-deletable properties: we cannot delete variables, functions, or undeletable properties. Throws TypeError.
+3.  No duplicate parameters: Function parameters with same name are not allowed. Throws SyntaxError.
+4.  `this` in functions: In non-strict mode, `this` inside a normal function defaults to window object. In strict mode, it stays `undefined`, which prevents accidental bugs.
+5.  No octal literals: Octal numbers like 010 are not allowed in strict mode.
+6.  No `with` statement: The `with` statement is completely banned because it makes code unpredictable and unoptimizable.
+7.  More secure `eval`: Variables declared inside `eval()` do not leak to the outer scope in strict mode.
+8.  Read-only properties cannot be written to: Assigning value to a read-only property, getter-only property, or non-extensible object will throw TypeError instead of failing silently.
+9.  Reserved keywords: Words that will be used in future JavaScript versions like `implements`, `interface`, `package` cannot be used as variable names.
+10. Makes JavaScript more optimizable: Strict mode code can be optimized better by the engine because it eliminates silent errors and ambiguous behaviours.

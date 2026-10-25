@@ -1,0 +1,17 @@
+Hoisting is JavaScript's default behavior where declarations are moved to the top of their scope during the Memory Creation Phase, before code execution starts.
+
+So even though we write code in a certain order, JavaScript first scans everything, allocates memory for variables and functions, and only then executes line by line.
+
+Because of this, we can access variables and functions before we have written their declaration in the code.
+
+How different keywords are hoisted:
+
+var: Gets hoisted and initialized with `undefined`. So it doesn't give error if accessed before declaration, but gives undefined.
+
+let and const: Also gets hoisted, but they are NOT initialized. They stay in a Temporal Dead Zone from start of scope until their declaration line. If we access them before declaration, it throws ReferenceError.
+
+Function Declaration: Fully hoisted with its body. we can call it before its definition.
+
+Function Expression and Arrow Function: Treated like variables. If made with var, it's undefined before. If made with let/const, it's in Temporal Dead Zone.
+
+So hoisting doesn't mean physical movement of code, it's just how memory allocation happens first.

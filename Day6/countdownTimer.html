@@ -1,0 +1,39 @@
+Countdown timer with debounce input using setTimeout, Date, DOM:-
+
+<input id="secondsInput" type="number" placeholder="Enter seconds" />
+<div id="display"></div>
+<button id="startBtn">Start</button>
+
+<script>
+let debounceTimer;
+let countdownTimer;
+let targetDate;
+
+const input = document.getElementById("secondsInput");
+const display = document.getElementById("display");
+
+// Debounce input
+input.addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    let sec = parseInt(input.value);
+    if (sec > 0) {
+      targetDate = new Date(Date.now() + sec * 1000); // we use Date
+      display.textContent = `we ready to count ${sec}s`;
+    }
+  }, 500); // we debounce 500ms
+});
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    let diff = targetDate - new Date(); // we Date difference
+    if (diff <= 0) {
+      clearInterval(countdownTimer);
+      display.textContent = "we time up!";
+    } else {
+      display.textContent = `we ${Math.floor(diff / 1000)}s left`;
+    }
+  }, 1000);
+});
+</script>

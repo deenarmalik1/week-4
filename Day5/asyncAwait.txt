@@ -1,0 +1,66 @@
+
+
+What async/await is for us:
+
+It's not new async mechanism. It's syntactic sugar over Promises. Under the hood, everything we do with async/await is still Promises and `.then()` chains. But for us, it looks and feels like synchronous code, top-to-bottom, which makes it way easier to read and reason.
+
+Before this, we had callbacks - we got hell. Then we got Promises - we got chaining and flat structure, but still we had many `.then()`. Async/await gave us linear flow for us.
+
+async keyword - what we get:
+
+When we put `async` in front of function, two things happen for us:
+
+1. That function always returns a Promise. Even if we return simple value like `5`, JS automatically wraps it into `Promise.resolve(5)`. Even if we throw, it becomes `Promise.reject()`.
+
+2. Inside that function, we are allowed to use `await` keyword. Without `async`, we cannot use `await`.
+
+So `async` marks our function as promise-based context.
+
+await keyword - how we wait:
+
+`await` is how we pause execution inside our async function until Promise settles.
+
+When we write `await somePromise`, what we do is: we pause our function right there, we give control back to event loop, JS does other work. When `somePromise` fulfills, we resume our function and `await` expression evaluates to fulfilled value. If promise rejects, `await` throws that rejection as error.
+
+Important for us: `await` doesn't block main thread. It only pauses our async function. Whole JS thread is still free. It just suspends that one function's execution context and puts it in microtask queue to resume later.
+
+We can await any value - if we await non-promise, JS wraps it into resolved promise immediately.
+
+We can only use `await` inside async function (or at top-level module in modern JS). That's rule for us.
+
+How we handle errors with try/catch:
+
+This is beautiful part for us. Since `await` throws on rejection, we can use regular synchronous `try/catch` we already know.
+
+We wrap our await calls in `try` block, and if any promise rejects, we catch in `catch` block. No need for `.catch()` chain.
+
+And we can have one try/catch for multiple awaits, which acts like centralized error handling similar to one `.catch()` at end of promise chain. Or we can have separate try/catch per await if we need granular handling.
+
+And we also have `finally` we use for cleanup - hiding loader, etc., just like promise `.finally()`.
+
+Sequential vs Parallel - How we control flow:
+
+This is crucial for us to understand performance.
+
+If we write `await` one after another, we run sequentially - we wait for first to finish, then start second. Good when second depends on first.
+
+But if our tasks are independent, we should not await immediately. For us, better to start all promises first without await, then await them together with `Promise.all()`. That way they run in parallel.
+
+Many of us make mistake of awaiting in loop sequentially when we could run parallel, making our code slow.
+
+Behind the scenes for us:
+
+When we write async function with multiple awaits, JS compiler converts it into state machine with promise chains.
+
+For us, each `await` is roughly equivalent to `.then()` break. Function is split into parts. That's why we need to remember it's still async - any code after await won't run immediately.
+
+Why we prefer it over .then() chaining:
+
+- We get synchronous-like readability - our logic is linear, not chain of callbacks.
+- We get normal control flow we use - `if`, `for`, `try/catch`, `while` work naturally with await, whereas with `.then()` we had to nest or chain awkwardly.
+- Debugging is easier for us - stack traces are better, we can put breakpoint on await line and see value, variables are in scope.
+- Error handling feels natural - we use try/catch instead of `.catch()`.
+
+But we must remember for us: async/await doesn't replace Promises knowledge. We still need Promises for `Promise.all`, `Promise.race`, creating promises, etc. Await just consumes promises.
+
+So for us, async = function returns promise + allows await inside, await = pause function until promise settles and unwrap value or throw, and together they let us write async logic as if it were synchronous, without blocking thread.

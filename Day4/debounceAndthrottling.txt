@@ -1,0 +1,61 @@
+We need them because some events in browser fire too often for us - like `scroll`, `resize`, `mousemove`, `keydown` in search input, `click` on button. If we run heavy logic or API call on every single fire, we kill performance and server.
+
+Both debounce and throttling limit execution, but in different way for us.
+
+Debounce - We Wait For Silence:
+
+Debounce means - we group many rapid calls into one single call after we get a pause.
+
+What we do is: when event fires, we start a timer, say 500ms. If another event fires before timer finishes, we cancel previous timer and start new timer again. We keep resetting. Only when we have quiet period of 500ms with no new events, we finally execute our function.
+
+So we are saying - don't run while we are still typing / scrolling / resizing, run only when we stop.
+
+When do we use debounce?
+
+- Search input we type: We don't want to call API on every keystroke. We want to wait until we stop typing for 300-500ms, then call API once.
+
+- Window resize we do: Resize fires 100 times while we drag. We don't need to recalculate layout every time, we wait until we finish resizing.
+
+- Form validation we do: Validate after we stop typing, not while.
+
+- Save draft / auto-save we implement:* Save only after we pause typing.
+
+We have two flavors we use - trailing debounce (default) executes after quiet period, leading debounce executes immediately on first call then ignores rest until pause.
+
+Throttling - We Limit Frequency:
+
+Throttling means - we ensure our function executes at most once every fixed time interval, no matter how many times event fires.
+
+What we do is: when event fires first time, we run immediately. Then we start timer, say 1000ms. During that 1000ms, if events keep firing, we ignore them. After timer finishes, we are allowed to run again on next event.
+
+So we are saying - run regularly, but not too often.
+
+When do we use throttling?
+
+- Scroll event we listen: We need to know scroll position to show sticky header or infinite scroll, but we don't need 100 times per second. We throttle to once every 100-200ms.
+
+- Mousemove / drag we track: Mousemove fires crazy fast. We throttle to update UI at reasonable rate like 60fps or less.
+
+- Resize handler we have heavy calc: We throttle instead of debounce if we want to show intermediate updates while resizing, not just at end.
+
+- Button click spam we prevent: We throttle click so we don't send duplicate API requests if we click fast.
+
+- API polling / game loop we run: We want consistent rate.
+
+How We Differentiate Easily:
+
+Think like this for us:
+
+- Debounce - If we keep firing, we never run. We only run after we stop firing for some time. Like we wait for elevator - if people keep coming, we wait, when no one comes for a while, we close door.
+
+- Throttle - If we keep firing, we run periodically. We don't wait for stop, we just limit. Like we have traffic - we let one car per second, even if 100 cars waiting.
+
+Which We Should Choose:
+
+- If we care about final state after burst ends - like final search query, final window size - we use debounce.
+
+- If we care about intermediate states during continuous activity - like scroll position, mouse position, progress while dragging - we use throttling.
+
+- Sometimes we use both together for us - e.g., throttle for scroll progress update, debounce for saving after scroll ends.
+
+Both help us improve performance, reduce server calls, and keep UI smooth, without losing important updates.

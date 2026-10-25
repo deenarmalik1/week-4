@@ -1,0 +1,73 @@
+1. Call Stack - Where We Execute:
+
+We can think of call stack as our single workspace, LIFO - Last In First Out.
+
+When we call a function, we push its execution context onto stack. We execute it. When it finishes, we pop it. We can only do one thing at a time here because JavaScript is single-threaded.
+
+So when we run synchronous code, everything goes directly to call stack and runs line by line.
+
+When we call an async function like `setTimeout` or `fetch`, we push it to stack, but its implementation is not in JS engine. So our stack sees - this is a Web API call - and we hand it off. Then we immediately pop it from stack and we continue to next line. That's how we stay non-blocking.
+
+If our call stack is busy with heavy loop, nothing else can run. That's why we freeze.
+
+2. Web APIs - Where We Offload Waiting:
+
+Web APIs are not part of JavaScript language itself. They are provided to us by browser (or by http://Node.js C++ APIs in Node).
+
+Examples we use: `setTimeout`, `setInterval`, `fetch`, `DOM events`, `geolocation`, `localStorage` is sync but many are async, `requestAnimationFrame`.
+
+When we call them, what we do is - we ask browser to do work in background threads outside our main thread. Browser starts timer, starts network request, listens for click, etc.
+
+So waiting happens outside our call stack. Our main thread is free.
+
+When Web API finishes its work - timer expired, data fetched, user clicked - it doesn't directly push to call stack. It puts our callback into a queue.
+
+3. Callback Queues - Where We Wait For Turn:
+
+We actually have two important queues we should know:
+
+- Macrotask Queue / Task Queue / Callback Queue: This is where callbacks from `setTimeout`, `setInterval`, `setTimeout`, I/O, UI events like click, `fetch` event handlers (depending on implementation) go. Also called Callback Queue.
+
+- Microtask Queue: This is higher priority queue. Here go `Promise.then`, `catch`, `finally`, `queueMicrotask`, `MutationObserver`. When we resolve a promise, its handler goes here.
+
+We wait in these queues until call stack is empty and it's our turn.
+
+4. Event Loop - Our Traffic Controller:
+
+Event loop is the infinite loop that coordinates everything for us. Its job is very simple but crucial.
+
+It continuously checks:
+
+1.  Is our call stack empty? If not, we keep executing stack first.
+2.  If stack is empty, we check microtask queue. Is there anything there? If yes, we drain entire microtask queue - we take one by one, push to call stack, execute, until microtask queue is completely empty.
+3.  After microtasks are empty, we take one task from macrotask queue, push to call stack, execute it.
+4.  After that one macrotask finishes, we again check microtask queue first (because microtasks can be added during macrotask), drain it fully, then take next macrotask.
+5.  Repeat forever.
+
+That's the loop.
+
+This priority explains why we see promises run before setTimeout even with 0ms. Because when we do `setTimeout(0)` we go to macrotask, but `Promise.resolve().then()` goes to microtask, and event loop always empties microtask first.
+
+*How It All Works Together For Us - Full Flow:*
+
+Let's trace what we do when we run code:
+
+We start script -> sync code goes to call stack -> we execute.
+
+We hit `setTimeout(callback, 1000)` -> we push to stack -> stack sees it's Web API -> we hand timer to browser Web API -> browser starts 1000ms timer in background thread -> we pop setTimeout from stack -> we continue sync.
+
+We hit `fetch(url)` -> push to stack -> hand network request to Web API -> browser starts HTTP request in background -> pop from stack -> we continue, we get Promise.
+
+We hit `Promise.then(callback)` -> then callback is registered to be put in microtask queue later.
+
+Later, timer finishes -> Web API puts our setTimeout callback into macrotask queue.
+
+Network finishes -> Web API puts fetch `.then` callback into microtask queue.
+
+Now our sync code finishes, call stack empty. Event loop checks: microtask queue has fetch handler? Yes -> we push it to stack, run it. Microtask empty now.
+
+Then event loop takes one from macrotask queue -> our setTimeout callback -> push to stack, run.
+
+And we repeat.
+
+So for us, JavaScript handles async not by being multi-threaded in language, but by delegating waiting to Web APIs, queuing callbacks, and using event loop to schedule when to run them.
